@@ -1,5 +1,5 @@
-mongoose = require("mongoose");
-ObjectId = mongoose.Schema.Types.ObjectId;
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 let validateEmail = function (email) {
   let regexForEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -19,11 +19,7 @@ const internSchema = new mongoose.Schema({
     lowercase: true,
     unique: true,
     required: "Email address is required",
-    validate: [validateEmail, "Please fill a valid email address"],
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      "Please fill a valid email address",
-    ],
+    validate: [validateEmail, "Please fill a valid email address"]
   },
   mobile: {
     type: String,

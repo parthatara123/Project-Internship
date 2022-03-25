@@ -10,35 +10,50 @@ function isValid(value) {
 const createIntern = async function (req, res) {
   try {
     let internData = req.body;
+    let inputQuery = req.query;
+
+    if (Object.keys(inputQuery).length > 0)
+      return res
+        .status(400)
+        .send({
+          Status: false,
+          msg: "Please provide input in body instead of query params.",
+        });
 
     //Validation
     if (Object.keys(internData).length === 0)
       return res
         .status(400)
-        .send({ status: false, msg: "Please provide Intern data in body" });
+        .send({ status: false, msg: "Please provide Intern 
+        data in body" });
 
     //{ name, mobile, email, collegeId}
     if (!isValid(internData.name))
       return res
         .status(400)
         .send({ status: false, msg: "Intern name is required" });
+
     if (!isValid(internData.mobile))
       return res
         .status(400)
         .send({ status: false, msg: "Intern mobile number is required" });
+
+    if(!/^[6-9]\d{9}$/.test(internData.mobile)) return res.status(400).send({status: false, msg: 'Invalid mobile number'})
+    
     if (!isValid(internData.email))
       return res
         .status(400)
         .send({ status: false, msg: "Intern email id is required" });
-    if (!isValid(internData.collegeId))
-      return res
-        .status(400)
-        .send({ status: false, msg: "Intern collage id is required" });
 
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(internData.email))
       return res
         .status(400)
         .send({ status: false, message: "enter a valid email" });
+
+    if (!isValid(internData.collegeId))
+      return res
+        .status(400)
+        .send({ status: false, msg: "Intern collage id is required" });
 
     let isEmailAlreadyUsed = await InternModel.findOne({
       email: internData.email,
@@ -47,6 +62,7 @@ const createIntern = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, msg: "Email already registered" });
+
     let isMobileAlreadyUsed = await InternModel.findOne({
       mobile: internData.mobile,
     });
@@ -55,7 +71,9 @@ const createIntern = async function (req, res) {
         .status(400)
         .send({ status: false, msg: "Mobile number already registered" });
 
-    let isCollegeIdAvailable = await CollegeModel.findById(internData.collegeId);
+    let isCollegeIdAvailable = await CollegeModel.findById(
+      internData.collegeId
+    );
 
     if (!isCollegeIdAvailable)
       return res
